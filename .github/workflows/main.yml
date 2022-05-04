@@ -1,24 +1,24 @@
 name: Build and Tests
 
-on:  
+on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
-jobs:  
-  build:    
+jobs:
+  build:
     runs-on: windows-latest
-    
-    steps:      
+
+    steps:
       - uses: actions/checkout@v2
-      
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
-        
+
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1
 
@@ -31,6 +31,6 @@ jobs:
       - name: Build Solution
         run: |
           msbuild.exe Mcv.sln /p:platform="Any CPU" /p:configuration="Release"
-        
+
       - name: Run Tests
         run: vstest.console.exe \Mcv.Tests\bin\Release\Sandbox.Tests.dll
