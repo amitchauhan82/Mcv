@@ -26,11 +26,11 @@ jobs:
         run: cd $GITHUB_WORKSPACE
 
       - name: Restore Packages
-        run: nuget restore Mcv.sln
+        run: nuget restore .\Mvc\Mcv.sln
 
       - name: Build Solution
         run: |
-          msbuild.exe Mcv.sln /p:platform="Any CPU" /p:configuration="Release"
+          msbuild.exe .\Mvc\Mcv.sln /p:platform="Any CPU" /p:configuration="Release"
 
       - name: Run Tests
-        run: vstest.console.exe \Mcv.Tests\bin\Release\Sandbox.Tests.dll
+        run: vstest.console.exe .\Mcv.Tests\bin\Release\Mvc.Tests.dll
