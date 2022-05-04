@@ -44,3 +44,5 @@ jobs:
 
       - name: Upload Test Reports to Codecov
         uses: codecov/codecov-action@v2.0.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
