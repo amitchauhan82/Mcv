@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v1.0.0
         with:
           name: published_webapp
-          path: bin\Release\Publish
+          path: .\Mcv\bin
 
       - name: Run Tests
         run: vstest.console.exe .\Mcv.Tests\bin\Release\Mcv.Tests.dll
