@@ -1,3 +1,4 @@
+#https://dev.to/felipetofoli/github-actions-for-net-full-framework-build-and-test-299h
 name: Build and Tests
 
 on:
@@ -34,3 +35,6 @@ jobs:
 
       - name: Run Tests
         run: vstest.console.exe .\Mcv.Tests\bin\Release\Mcv.Tests.dll
+
+      - name: Upload Test Reports to Codecov
+        uses: codecov/codecov-action@v2.0.2
