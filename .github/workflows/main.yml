@@ -46,5 +46,4 @@ jobs:
         uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: .\Mcv.Tests\M058565_SGPC1650 2022-05-05 10_15_13.coveragexml
           flags: unittests
