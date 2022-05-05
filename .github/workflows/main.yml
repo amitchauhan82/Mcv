@@ -1,24 +1,25 @@
+#https://dev.to/felipetofoli/github-actions-for-net-full-framework-build-and-test-299h
 name: Build and Tests
 
-on:  
+on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
-jobs:  
-  build:    
+jobs:
+  build:
     runs-on: windows-latest
-    
-    steps:      
+
+    steps:
       - uses: actions/checkout@v2
-      
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
-        
+
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1
 
@@ -26,11 +27,35 @@ jobs:
         run: cd $GITHUB_WORKSPACE
 
       - name: Restore Packages
-        run: nuget restore Mcv.sln
+        run: nuget restore .\Mcv\Mcv.sln
 
       - name: Build Solution
         run: |
-          msbuild.exe Mcv.sln /p:platform="Any CPU" /p:configuration="Release"
-        
+          msbuild.exe .\Mcv\Mcv.sln /p:platform="Any CPU" /p:configuration="Release"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: published_webapp
+          path: .\Mcv\bin
+
       - name: Run Tests
-        run: vstest.console.exe \Mcv.Tests\bin\Release\Sandbox.Tests.dll
+        run: vstest.console.exe .\Mcv.Tests\bin\Release\Mcv.Tests.dll /EnableCodeCoverage
+
+      - name: Run Script
+        run: |
+          dotnet tool install dotnet-reportgenerator --tool-path . --version 4.0.12
+          dotnet tool install coverlet.console --tool-path . --version 1.4.1
+          mkdir .\reports
+          $unitTestFile = gci -Recurse | ?{ $_.FullName -like "*bin\*test*.dll" }
+          $coverlet = "$pwd\coverlet.exe"
+          & $coverlet $unitTestFile.FullName --target "dotnet" --targetargs "vstest $($unitTestFile.FullName) --logger:trx" --format "cobertura"
+          gci -Recurse |
+          ?{ $_.Name -eq "coverage.cobertura.xml"} |
+          %{ &"$pwd\reportgenerator.exe" "-reports:$($_.FullName)" "-targetdir:reports" "-reportstypes:HTMLInline;HTMLChart" }
+
+      - name: Upload Test Reports to Codecov
+        uses: codecov/codecov-action@v2.0.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
